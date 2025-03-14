@@ -4,13 +4,13 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import AgentExecutor, ZeroShotAgent
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
-from tools import search_flights_tool, policy_check_tool
+from tools import search_flights_tool, policy_check_tool, purchase_ticket_tool
 
 load_dotenv()
 
 def create_agent():
     # 1. List of tools the agent has access to:
-    tools = [search_flights_tool, policy_check_tool]
+    tools = [search_flights_tool, policy_check_tool, purchase_ticket_tool]
 
     # 2. Agent uses an LLM to process the user query and generate a response
     llm = ChatGoogleGenerativeAI(
@@ -39,11 +39,16 @@ def create_agent():
 You have the following tools:
 1) search_flights_tool - to find flights between two cities, format: "CityA,CityB"
 2) policy_check_tool - to verify flights' compliance with the above policy
+3) purchase_ticket_tool: finalize the purchase of a flight.
 
 When the user asks for flights, do:
 - Use search_flights_tool to get the flights.
 - Then use policy_check_tool for each flight or for the entire list.
 - Recommend only flights that comply with policy.
+
+When the user wants to purchase a flight:
+- Make sure the flight is policy-compliant.
+- Then use 'purchase_ticket_tool' to mock a ticket purchase.
 
 Give a proper answer as sentences, not in json format.
 If the user asks something outside flight scope, respond: "I'm sorry, I only handle flight queries."

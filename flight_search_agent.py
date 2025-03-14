@@ -15,6 +15,14 @@ MOCK_FLIGHTS = [
         "class": "Business",
         "price": 4150
     },
+        {
+        "flight_code": "TK105",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Ankara",
+        "class": "Economy",
+        "price": 800
+    },
     {
         "flight_code": "LH201",
         "carrier": "Lufthansa",
