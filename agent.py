@@ -16,22 +16,34 @@ def create_agent():
     llm = ChatGoogleGenerativeAI(
         google_api_key=os.getenv("GOOGLE_API_KEY"),
         model="gemini-2.0-flash",
-        temperature=0.7
+        temperature=0.5
     )
 
-#     # 3. The agent's prompt
-#     prefix = """You are a travel assistant. You can answer queries about flights.
-# When it's relevant, use the provided tools to find flight data.
-# If user asks something out of scope, respond with "I'm sorry, I only handle flight queries." 
+    # A prefix instructing the agent how to respond
+#     prefix = """You are a travel assistant that strictly follows corporate policy:
+# 1) Any flight above 2000 TL is not allowed.
+# 2) Only Economy class is allowed.
+
+# You have the following tools:
+# 1) search_flights_tool - to find flights between two cities, format: "CityA,CityB"
+# 2) policy_check_tool - to verify flights' compliance with the above policy
+# 3) purchase_ticket_tool: finalize the purchase of a flight.
+
+# When the user asks for flights, do:
+# - Use search_flights_tool to get the flights.
+# - Then use policy_check_tool for each flight or for the entire list.
+# - Recommend only flights that comply with policy.
+
+# When the user wants to purchase a flight:
+# - Make sure the flight is policy-compliant.
+# - Then use 'purchase_ticket_tool' to mock a ticket purchase.
+
+# Give a proper answer as sentences, not in json format.
+# If the user asks something outside flight scope, respond: "I'm sorry, I only handle flight queries."
+
 # -----
 # """
-#     suffix = """Begin:
-# {chat_history}
-# Question: {input}
-# {agent_scratchpad}"""
 
-
-    # A prefix instructing the agent how to respond
     prefix = """You are a travel assistant that strictly follows corporate policy:
 1) Any flight above 2000 TL is not allowed.
 2) Only Economy class is allowed.
@@ -41,20 +53,25 @@ You have the following tools:
 2) policy_check_tool - to verify flights' compliance with the above policy
 3) purchase_ticket_tool: finalize the purchase of a flight.
 
-When the user asks for flights, do:
-- Use search_flights_tool to get the flights.
-- Then use policy_check_tool for each flight or for the entire list.
-- Recommend only flights that comply with policy.
+Workflow you must follow:
+1) If the user says "I want to buy a ticket" (or similar) and does NOT explicitly provide a city pair, 
+    DO NOT guess or default any cities. 
+    Simply respond with a question like: "Which cities are you traveling from and to?" 
+    Then wait for the user's answer. 
+    Do not call 'search_flights_tool' in this step.
+2) If user requests flights (and provides a city pair), call 'search_flights_tool' to get the flight list. 
+   Present them in your reply as text (e.g. "Flight TK103: 1950 TL Economy"). DO NOT purchase yet.
+3) Wait for user to pick a specific flight in a subsequent message.
+4) When user says "I choose flight X" or "I want to purchase flight X," THEN call 'purchase_ticket_tool'.
 
-When the user wants to purchase a flight:
-- Make sure the flight is policy-compliant.
-- Then use 'purchase_ticket_tool' to mock a ticket purchase.
+If user tries to purchase immediately in the same message they first request flights, 
+still do step 2 first. The user must confirm a specific flight in their next message before purchase.
 
-Give a proper answer as sentences, not in json format.
-If the user asks something outside flight scope, respond: "I'm sorry, I only handle flight queries."
-
+If user asks something out of scope, respond: "I'm sorry, I only handle flight queries."
 -----
 """
+
+
     # The suffix includes placeholders for the conversation
     suffix = """Begin:
 {chat_history}

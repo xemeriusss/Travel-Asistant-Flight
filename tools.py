@@ -63,27 +63,35 @@ policy_check_tool = Tool(
 
 #####
 
-def _purchase_flight_wrapper(flight_data_str: str):
+def _purchase_flight_wrapper(json_input: str):
     """
-    The LLM will pass flight info as a string (JSON, Python dict, etc.).
-    We'll parse it and then call purchase_flight.
+    The LLM will call this tool with a string that can be parsed as a Python dict.
+
+    Expected input format (as a string):
+    {
+      "flight_code": "TK103",
+      "carrier": "THY",
+      "departure_city": "Istanbul",
+      "arrival_city": "Ankara",
+      "class": "Economy",
+      "price": 1950
+    }
     """
     try:
-        flight_data = ast.literal_eval(flight_data_str)
-    except Exception as e:
-        return "Failed to parse flight data. Please provide valid flight info."
+        flight_data = ast.literal_eval(json_input)
+    except Exception:
+        return "Failed to parse flight data. Please provide valid flight info (as dict/JSON)."
 
     if not isinstance(flight_data, dict):
         return "Purchase tool expects a single flight dict."
 
     return purchase_flight(flight_data)
 
-
 purchase_ticket_tool = Tool(
     name="purchase_ticket_tool",
     func=_purchase_flight_wrapper,
     description=(
-        "Mock the process of purchasing a ticket. Input must be a string "
-        "that can be parsed into a dict with flight details."
+        "Mock process of purchasing a flight. Input must be a string that can "
+        "be parsed into a dict containing flight details."
     )
 )
