@@ -10,6 +10,6 @@ def purchase_flight(flight_dict):
 
     return (
         f"Purchase successful!\n"
-        f"Flight: {flight_code} ({carrier})\n"
+        # f"Flight: {flight_code} ({carrier})\n"
         "Thank you for booking with us!"
     )

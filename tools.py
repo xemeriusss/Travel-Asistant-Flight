@@ -1,26 +1,47 @@
 # tools.py
 from langchain.agents import Tool
-from flight_search_agent import search_flights
+from flight_search_agent import MOCK_FLIGHTS, search_flights
 from policy_agent import check_policy
 from purchase_agent import purchase_flight
 import ast
 
-def _flight_search_wrapper(city_pair: str):
-    try:
-        departure, arrival = city_pair.split(",")
-    except ValueError:
-        return "Please provide two cities, separated by a comma."
+# def _flight_search_wrapper(city_pair: str):
+#     try:
+#         departure, arrival = city_pair.split(",")
+#     except ValueError:
+#         return "Please provide two cities, separated by a comma."
     
-    results = search_flights(departure.strip(), arrival.strip())
-    if results:
-        return str(results)  # Return them as a string so LLM can read them
-    else:
-        return "No flights found."
+#     results = search_flights(departure.strip(), arrival.strip())
+#     if results:
+#         return str(results)  # Return them as a string so LLM can read them
+#     else:
+#         return "No flights found."
+
+def _search_flights_wrapper(query: str):
+    """
+    Input format: "CityA,CityB,YYYY-MM-DD"
+    We'll parse it, then filter the MOCK_FLIGHTS accordingly.
+    """
+    parts = query.split(",")
+    if len(parts) != 3:
+        return "Error: please provide departure_city, arrival_city, and date in 'CityA,CityB,YYYY-MM-DD' format."
+
+    dep_city, arr_city, flight_date = [p.strip() for p in parts]
+    matched = []
+    for f in MOCK_FLIGHTS:
+        if (f["departure_city"].lower() == dep_city.lower() and
+            f["arrival_city"].lower() == arr_city.lower() and
+            f["departure_date"] == flight_date):
+            matched.append(f)
+    if not matched:
+        return "No flights found for that route and date."
     
+    return str(matched)
+
     
 search_flights_tool = Tool(
     name="search_flights_tool",
-    func=_flight_search_wrapper,
+    func=_search_flights_wrapper,
     description=(
         "Use this tool to search flights between two cities. "
         "Input must be a string in the format 'departure_city,arrival_city'."

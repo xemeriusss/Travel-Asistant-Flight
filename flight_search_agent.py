@@ -1,93 +1,216 @@
 MOCK_FLIGHTS = [
+    # ORIGINAL ENTRIES
     {
         "flight_code": "TK103",
         "carrier": "THY",
         "departure_city": "Istanbul",
         "arrival_city": "Ankara",
+        "departure_date": "2023-09-01",
+        "boarding_time": "08:00",
+        "landing_time": "09:15",
         "class": "Economy",
         "price": 1950
+    },
+    {
+        "flight_code": "TK105",
+        "carrier": "THY",
+        "departure_city": "Ankara",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-05",
+        "boarding_time": "18:30",
+        "landing_time": "19:45",
+        "class": "Economy",
+        "price": 1800
     },
     {
         "flight_code": "TK104",
         "carrier": "THY",
         "departure_city": "Istanbul",
         "arrival_city": "Ankara",
-        "class": "Business",
-        "price": 4150
+        "departure_date": "2023-09-01",
+        "boarding_time": "10:00",
+        "landing_time": "11:15",
+        "class": "Economy",
+        "price": 1600
     },
-        {
-        "flight_code": "TK105",
+    {
+        "flight_code": "TK106",
         "carrier": "THY",
         "departure_city": "Istanbul",
         "arrival_city": "Ankara",
-        "class": "Economy",
-        "price": 800
-    },
-    {
-        "flight_code": "LH201",
-        "carrier": "Lufthansa",
-        "departure_city": "Berlin",
-        "arrival_city": "Frankfurt",
-        "class": "Economy",
-        "price": 2490
-    },
-    {
-        "flight_code": "LH202",
-        "carrier": "Lufthansa",
-        "departure_city": "Berlin",
-        "arrival_city": "Frankfurt",
+        "departure_date": "2023-09-01",
+        "boarding_time": "13:00",
+        "landing_time": "14:15",
         "class": "Business",
-        "price": 4990
+        "price": 2200
     },
     {
-        "flight_code": "BA303",
-        "carrier": "British Airways",
-        "departure_city": "London",
-        "arrival_city": "New York",
+        "flight_code": "TK107",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Ankara",
+        "departure_date": "2023-09-01",
+        "boarding_time": "17:30",
+        "landing_time": "18:45",
+        "class": "Economy",
+        "price": 1850
+    },
+    {
+        "flight_code": "TK108",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Ankara",
+        "departure_date": "2023-09-02",
+        "boarding_time": "08:00",
+        "landing_time": "09:15",
+        "class": "Economy",
+        "price": 1500
+    },
+    {
+        "flight_code": "TK109",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Ankara",
+        "departure_date": "2023-09-02",
+        "boarding_time": "19:00",
+        "landing_time": "20:15",
+        "class": "Economy",
+        "price": 2000
+    },
+    {
+        "flight_code": "TK110",
+        "carrier": "THY",
+        "departure_city": "Ankara",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-06",
+        "boarding_time": "07:00",
+        "landing_time": "08:15",
+        "class": "Economy",
+        "price": 1900
+    },
+    {
+        "flight_code": "TK111",
+        "carrier": "THY",
+        "departure_city": "Ankara",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-06",
+        "boarding_time": "10:00",
+        "landing_time": "11:15",
+        "class": "Business",
+        "price": 2400
+    },
+    {
+        "flight_code": "TK112",
+        "carrier": "THY",
+        "departure_city": "Ankara",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-06",
+        "boarding_time": "15:30",
+        "landing_time": "16:45",
         "class": "Economy",
         "price": 1700
     },
     {
-        "flight_code": "BA304",
-        "carrier": "British Airways",
-        "departure_city": "London",
-        "arrival_city": "New York",
-        "class": "Business",
-        "price": 1200
-    },
-    {
-        "flight_code": "UA501",
-        "carrier": "United Airlines",
-        "departure_city": "Chicago",
-        "arrival_city": "Los Angeles",
+        "flight_code": "TK113",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Izmir",
+        "departure_date": "2023-09-03",
+        "boarding_time": "09:00",
+        "landing_time": "10:00",
         "class": "Economy",
-        "price": 3100
-    },
-    {
-        "flight_code": "UA502",
-        "carrier": "United Airlines",
-        "departure_city": "Chicago",
-        "arrival_city": "Los Angeles",
-        "class": "Business",
-        "price": 7500
-    },
-    {
-        "flight_code": "QR701",
-        "carrier": "Qatar Airways",
-        "departure_city": "Doha",
-        "arrival_city": "Istanbul",
-        "class": "Economy",
-        "price": 2800
-    },
-    {
-        "flight_code": "QR702",
-        "carrier": "Qatar Airways",
-        "departure_city": "Doha",
-        "arrival_city": "Istanbul",
-        "class": "Business",
         "price": 1400
+    },
+    {
+        "flight_code": "TK114",
+        "carrier": "THY",
+        "departure_city": "Izmir",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-10",
+        "boarding_time": "18:00",
+        "landing_time": "19:10",
+        "class": "Economy",
+        "price": 1300
+    },
+    {
+        "flight_code": "TK115",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Antalya",
+        "departure_date": "2023-09-03",
+        "boarding_time": "20:00",
+        "landing_time": "21:30",
+        "class": "Economy",
+        "price": 1800
+    },
+    {
+        "flight_code": "TK116",
+        "carrier": "THY",
+        "departure_city": "Antalya",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-07",
+        "boarding_time": "08:00",
+        "landing_time": "09:30",
+        "class": "Economy",
+        "price": 2000
+    },
+    {
+        "flight_code": "TK117",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Bodrum",
+        "departure_date": "2023-09-03",
+        "boarding_time": "06:00",
+        "landing_time": "07:20",
+        "class": "Economy",
+        "price": 1250
+    },
+    {
+        "flight_code": "TK118",
+        "carrier": "THY",
+        "departure_city": "Bodrum",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-08",
+        "boarding_time": "19:30",
+        "landing_time": "20:50",
+        "class": "Economy",
+        "price": 1950
+    },
+    {
+        "flight_code": "TK119",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Ankara",
+        "departure_date": "2023-09-04",
+        "boarding_time": "21:00",
+        "landing_time": "22:15",
+        "class": "Economy",
+        "price": 1500
+    },
+    {
+        "flight_code": "TK120",
+        "carrier": "THY",
+        "departure_city": "Istanbul",
+        "arrival_city": "Ankara",
+        "departure_date": "2023-09-02",
+        "boarding_time": "14:30",
+        "landing_time": "15:45",
+        "class": "Economy",
+        "price": 1999
+    },
+    {
+        "flight_code": "TK121",
+        "carrier": "THY",
+        "departure_city": "Ankara",
+        "arrival_city": "Istanbul",
+        "departure_date": "2023-09-06",
+        "boarding_time": "20:00",
+        "landing_time": "21:15",
+        "class": "Economy",
+        "price": 1800
     }
 ]
+
 
 def search_flights(departure_city, arrival_city):
     results = []
