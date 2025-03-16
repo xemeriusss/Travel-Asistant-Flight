@@ -9,43 +9,15 @@ from tools import search_flights_tool, policy_check_tool, purchase_ticket_tool, 
 load_dotenv()
 
 def create_agent():
-    # 1. List of tools the agent has access to:
+    # List of tools the agent has access.
     tools = [search_flights_tool, policy_check_tool, purchase_ticket_tool, retrieve_past_purchases_tool]
 
-    # 2. Agent uses an LLM to process the user query and generate a response
+    # Agent uses an LLM to process the user query and generate a response
     llm = ChatGoogleGenerativeAI(
         google_api_key=os.getenv("GOOGLE_API_KEY"),
         model="gemini-2.0-flash",
-        temperature=0.7
+        temperature=0.7 # To control the randomness of the response
     )
-
-
-#     prefix = """You are a travel assistant that strictly follows corporate policy:
-# 1) Any flight above 2000 TL is not allowed.
-# 2) Only Economy class is allowed.
-
-# You have the following tools:
-# 1) search_flights_tool - to find flights between two cities, format: "CityA,CityB"
-# 2) policy_check_tool - to verify flights' compliance with the above policy
-# 3) purchase_ticket_tool: finalize the purchase of a flight.
-
-# Workflow you must follow:
-# 1) If the user says "I want to buy a ticket" (or similar) and does NOT explicitly provide a city pair, 
-#     DO NOT guess or default any cities. 
-#     Simply respond with a question like: "Which cities are you traveling from and to?" 
-#     Then wait for the user's answer. 
-#     Do not call 'search_flights_tool' in this step.
-# 2) If user requests flights (and provides a city pair), call 'search_flights_tool' to get the flight list. 
-#    Present them in your reply as text (e.g. "Flight TK103: 1950 TL Economy"). DO NOT purchase yet.
-# 3) Wait for user to pick a specific flight in a subsequent message.
-# 4) When user says "I choose flight X" or "I want to purchase flight X," THEN call 'purchase_ticket_tool'.
-
-# If user tries to purchase immediately in the same message they first request flights, 
-# still do step 2 first. The user must confirm a specific flight in their next message before purchase.
-
-# If user asks something out of scope, respond: "I'm sorry, I only handle flight queries."
-# -----
-# """
 
     prefix = """You are a travel assistant that strictly follows corporate policy:
 1) Any flight above 2000 TL is not allowed.
@@ -83,8 +55,6 @@ If user asks something out of scope, respond: "I'm sorry, I only handle flight q
 -----
 """
 
-
-
     # The suffix includes placeholders for the conversation
     suffix = """Begin:
 {chat_history}
@@ -106,7 +76,7 @@ Question: {input}
         prompt=prompt
     )
 
-    # 4. Create the ZeroShotAgent with the LLM chain
+    # Create the ZeroShotAgent with the LLM chain
     agent = ZeroShotAgent(
         llm_chain=llm_chain,
         tools=tools,
@@ -114,7 +84,7 @@ Question: {input}
         handle_parsing_errors=True
     )
 
-    # 5. Create an AgentExecutor that handles the full logic
+    # Create an AgentExecutor that handles the full logic
     agent_chain = AgentExecutor.from_agent_and_tools(
         agent=agent,
         tools=tools,

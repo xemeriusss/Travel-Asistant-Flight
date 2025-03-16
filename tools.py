@@ -7,28 +7,16 @@ import ast
 import json
 import streamlit as st
 
-# def _flight_search_wrapper(city_pair: str):
-#     try:
-#         departure, arrival = city_pair.split(",")
-#     except ValueError:
-#         return "Please provide two cities, separated by a comma."
-    
-#     results = search_flights(departure.strip(), arrival.strip())
-#     if results:
-#         return str(results)  # Return them as a string so LLM can read them
-#     else:
-#         return "No flights found."
-
+# Search Flights Tool
+# Input format: "departure_city,arrival_city,date"
 def _search_flights_wrapper(query: str):
-    """
-    Input format: "CityA,CityB,YYYY-MM-DD"
-    We'll parse it, then filter the MOCK_FLIGHTS accordingly.
-    """
+
     parts = query.split(",")
     if len(parts) != 3:
         return "Error: please provide departure_city, arrival_city, and date in 'CityA,CityB,YYYY-MM-DD' format."
 
     dep_city, arr_city, flight_date = [p.strip() for p in parts]
+
     matched = []
     for f in MOCK_FLIGHTS:
         if (f["departure_city"].lower() == dep_city.lower() and
@@ -52,6 +40,7 @@ search_flights_tool = Tool(
 
 #####
 
+# Policy Check Tool
 def _policy_check_wrapper(flight_data_str: str):
     
     try:
@@ -86,20 +75,9 @@ policy_check_tool = Tool(
 
 #####
 
+# Purchase Ticket Tool
 def _purchase_flight_wrapper(json_input: str):
-    """
-    The LLM will call this tool with a string that can be parsed as a Python dict.
 
-    Expected input format (as a string):
-    {
-      "flight_code": "TK103",
-      "carrier": "THY",
-      "departure_city": "Istanbul",
-      "arrival_city": "Ankara",
-      "class": "Economy",
-      "price": 1950
-    }
-    """
     try:
         flight_data = ast.literal_eval(json_input)
     except Exception:
@@ -121,14 +99,12 @@ purchase_ticket_tool = Tool(
 
 #####
 
+# Retrieve Past Purchases Tool
 def _retrieve_past_purchases(_input: str = None):
-    """
-    Returns the user's past purchases from st.session_state.
-    `_input` is unused but included so the signature matches typical tool usage.
-    """
+
     if "past_purchases" not in st.session_state or not st.session_state.past_purchases:
         return "No past purchases found."
-    # Convert the list of dictionaries into a JSON string or a readable text
+    
     return json.dumps(st.session_state.past_purchases, indent=2)
 
 retrieve_past_purchases_tool = Tool(
