@@ -4,19 +4,19 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import AgentExecutor, ZeroShotAgent
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
-from tools import search_flights_tool, policy_check_tool, purchase_ticket_tool
+from tools import search_flights_tool, policy_check_tool, purchase_ticket_tool, retrieve_past_purchases_tool
 
 load_dotenv()
 
 def create_agent():
     # 1. List of tools the agent has access to:
-    tools = [search_flights_tool, policy_check_tool, purchase_ticket_tool]
+    tools = [search_flights_tool, policy_check_tool, purchase_ticket_tool, retrieve_past_purchases_tool]
 
     # 2. Agent uses an LLM to process the user query and generate a response
     llm = ChatGoogleGenerativeAI(
         google_api_key=os.getenv("GOOGLE_API_KEY"),
         model="gemini-2.0-flash",
-        temperature=0.5
+        temperature=0.7
     )
 
 
@@ -75,6 +75,9 @@ Workflow you must follow:
 
 If user tries to purchase immediately in the same message they first request flights, 
 still do the search step first. The user must confirm specific flights in their next message before purchase.
+
+If user says "show me the past purchases" or something similar, 
+call 'retrieve_past_purchases_tool' to retrieve that info. Then present it in your reply in a human-friendly format.
 
 If user asks something out of scope, respond: "I'm sorry, I only handle flight queries."
 -----

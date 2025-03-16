@@ -181,28 +181,32 @@ def main():
 
         st.session_state.current_step = "Topic Analysis"
 
-    # ---- SIDEBAR CODE START ----
-    # A list of workflow steps in English
-    steps = ["Topic Analysis", "Information Gathering", "Flight Search", "Ticket Purchase"]
+        st.session_state.past_purchases = []
 
-    # Render the sidebar header
-    st.sidebar.title("Process Steps")
+    # col1, col2 = st.columns([3, 2])
 
-    # Find index of current_step in the steps list
-    step_index = steps.index(st.session_state.current_step)
+    # # ---- SIDEBAR CODE START ----
+    # # A list of workflow steps in English
+    # steps = ["Topic Analysis", "Information Gathering", "Flight Search", "Ticket Purchase"]
 
-    # Display each step with a checkmark if completed, bold if current
-    for i, step_name in enumerate(steps):
-        if i < step_index:
-            # A completed step
-            st.sidebar.markdown(f"✅ **{step_name}**")
-        elif i == step_index:
-            # The current step
-            st.sidebar.markdown(f"🔄 **{step_name}**")
-        else:
-            # Future steps
-            st.sidebar.markdown(step_name)
-    # ---- SIDEBAR CODE END ----
+    # # Render the sidebar header
+    # st.sidebar.title("Process Steps")
+
+    # # Find index of current_step in the steps list
+    # step_index = steps.index(st.session_state.current_step)
+
+    # # Display each step with a checkmark if completed, bold if current
+    # for i, step_name in enumerate(steps):
+    #     if i < step_index:
+    #         # A completed step
+    #         st.sidebar.markdown(f"✅ **{step_name}**")
+    #     elif i == step_index:
+    #         # The current step
+    #         st.sidebar.markdown(f"🔄 **{step_name}**")
+    #     else:
+    #         # Future steps
+    #         st.sidebar.markdown(step_name)
+    # # ---- SIDEBAR CODE END ----
 
     # Display chat history
     for msg in st.session_state.messages:
@@ -239,6 +243,7 @@ def main():
 
         # Add assistant response to chat
         st.session_state.messages.append({"role": "assistant", "content": response})
+        
         with st.chat_message("assistant"):
             st.write(response)
 
@@ -256,19 +261,21 @@ def main():
                 st.session_state.inbound_flights = []  # no inbound
 
                 st.session_state.current_step = "Flight Search"
+
             elif len(outputs) == 2:
                 # Round-trip
                 st.session_state.outbound_flights = parse_flights(outputs[0])
                 st.session_state.inbound_flights = parse_flights(outputs[1])
 
                 st.session_state.current_step = "Flight Search"
+
             else:
                 # Rarely, if there's more than 2 calls...
                 # you might handle that differently or just store them all
                 pass
 
     st.divider()
-
+           
     # 8. Outbound flights
     if st.session_state.outbound_flights:
         st.write("### Outbound Flights")
@@ -282,6 +289,8 @@ def main():
             format_func=lambda i: outbound_options[i]
         )
         outbound_flight = st.session_state.outbound_flights[chosen_outbound_idx]
+    else:
+        outbound_flight = None
 
     # 9. Inbound flights
     if st.session_state.inbound_flights:
@@ -299,6 +308,8 @@ def main():
     else:
         inbound_flight = None
 
+    # st.divider()
+
     # 10. Confirm Purchase button
     if st.button("Confirm Purchase"):
 
@@ -306,15 +317,57 @@ def main():
 
         if outbound_flight and inbound_flight:
             user_msg = f"I choose outbound flight {outbound_flight} and inbound flight {inbound_flight}."
+
+            st.session_state.past_purchases.append({
+                "outbound": outbound_flight,
+                "inbound": inbound_flight
+            })
+
         elif outbound_flight:
             user_msg = f"I choose flight {outbound_flight}."  # one-way scenario
+
+            st.session_state.past_purchases.append({
+                "outbound": outbound_flight
+            })
+            
         else:
             user_msg = "I haven't picked any flight."
 
         st.session_state.messages.append({"role": "user", "content": user_msg})
-        with st.chat_message("user"):
-            st.write(user_msg)
 
+        with st.chat_message("user"):
+            # st.write(user_msg)
+            if outbound_flight and inbound_flight:
+                flight_details = f"""
+                I choose flight {outbound_flight["flight_code"]} operated by {outbound_flight["carrier"]} and  {inbound_flight["flight_code"]} operated by {inbound_flight["carrier"]}."""
+
+                # Departure: {outbound_flight["departure_city"]} → {outbound_flight["arrival_city"]}
+                # Date: {outbound_flight["departure_date"]}
+                # Boarding Time: {outbound_flight["boarding_time"]}
+                # Landing Time: {outbound_flight["landing_time"]}
+                # Class: {outbound_flight["class"]}
+                # Price: {outbound_flight["price"]} TRY
+                # """
+
+                st.write(flight_details)
+
+            elif outbound_flight:
+                flight_details = f"""
+                I choose flight {outbound_flight["flight_code"]} operated by {outbound_flight["carrier"]}."""
+
+                # Departure: {inbound_flight["departure_city"]} → {inbound_flight["arrival_city"]}
+                # Date: {inbound_flight["departure_date"]}
+                # Boarding Time: {inbound_flight["boarding_time"]}
+                # Landing Time: {inbound_flight["landing_time"]}
+                # Class: {inbound_flight["class"]}
+                # Price: {inbound_flight["price"]} TRY
+                # """
+
+                st.write(flight_details)
+
+            else:
+                st.write(user_msg)
+            
         # Rerun agent
         history_str = "\n".join(
             f"{m['role'].capitalize()}: {m['content']}"

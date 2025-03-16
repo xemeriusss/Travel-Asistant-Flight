@@ -4,6 +4,8 @@ from flight_search_agent import MOCK_FLIGHTS, search_flights
 from policy_agent import check_policy
 from purchase_agent import purchase_flight
 import ast
+import json
+import streamlit as st
 
 # def _flight_search_wrapper(city_pair: str):
 #     try:
@@ -114,5 +116,26 @@ purchase_ticket_tool = Tool(
     description=(
         "Mock process of purchasing a flight. Input must be a string that can "
         "be parsed into a dict containing flight details."
+    )
+)
+
+#####
+
+def _retrieve_past_purchases(_input: str = None):
+    """
+    Returns the user's past purchases from st.session_state.
+    `_input` is unused but included so the signature matches typical tool usage.
+    """
+    if "past_purchases" not in st.session_state or not st.session_state.past_purchases:
+        return "No past purchases found."
+    # Convert the list of dictionaries into a JSON string or a readable text
+    return json.dumps(st.session_state.past_purchases, indent=2)
+
+retrieve_past_purchases_tool = Tool(
+    name="retrieve_past_purchases_tool",
+    func=_retrieve_past_purchases,
+    description=(
+        "Use this to get the user's past purchased flights. "
+        "It returns a JSON list of purchases or a message if none found."
     )
 )
