@@ -4,13 +4,13 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import AgentExecutor, ZeroShotAgent
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
-from tools import search_flights_tool, policy_check_tool, purchase_ticket_tool, retrieve_past_purchases_tool
+from tools import search_flights_tool, policy_check_tool, purchase_ticket_tool, retrieve_past_purchases_tool, recommend_destination_tool
 
 load_dotenv()
 
 def create_agent():
     # List of tools the agent has access.
-    tools = [search_flights_tool, policy_check_tool, purchase_ticket_tool, retrieve_past_purchases_tool]
+    tools = [search_flights_tool, policy_check_tool, purchase_ticket_tool, retrieve_past_purchases_tool, recommend_destination_tool]
 
     # Agent uses an LLM to process the user query and generate a response
     llm = ChatGoogleGenerativeAI(
@@ -27,6 +27,8 @@ You have the following tools:
 1) search_flights_tool - to find flights given (city pair, date). Format: "CityA,CityB,YYYY-MM-DD"
 2) policy_check_tool - to verify flights' compliance with the above policy
 2) purchase_ticket_tool - finalize the purchase of a flight.
+3) retrieve_past_purchases_tool - to retrieve past purchases.
+4) recommend_destination_tool - to recommend destinations based on weather.
 
 Workflow you must follow:
 1) If the user says "I want to buy a ticket" (or similar) but does not provide:
@@ -50,6 +52,10 @@ still do the search step first. The user must confirm specific flights in their 
 
 If user says "show me the past purchases" or something similar, 
 call 'retrieve_past_purchases_tool' to retrieve that info. Then present it in your reply in a human-friendly format.
+
+If the user asks similar to "I want to fly somewhere hot" or "I want to fly somewhere cold", 
+then call 'recommend_destination_tool' with the appropriate preference ("hot" or "cold"). 
+Use its output to recommend destination cities, then ask the user if they would like to see flights to one of those destinations.
 
 If user asks something out of scope, respond: "I'm sorry, I only handle flight queries."
 -----

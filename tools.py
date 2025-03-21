@@ -1,11 +1,12 @@
 # tools.py
 from langchain.agents import Tool
-from flight_search_agent import MOCK_FLIGHTS, search_flights
+from flight_search_agent import MOCK_FLIGHTS
 from policy_agent import check_policy
 from purchase_agent import purchase_flight
 import ast
 import json
 import streamlit as st
+from collections import defaultdict
 
 # Search Flights Tool
 # Input format: "departure_city,arrival_city,date"
@@ -19,7 +20,7 @@ def _search_flights_wrapper(query: str):
 
     matched = []
     for f in MOCK_FLIGHTS:
-        if (f["departure_city"].lower() == dep_city.lower() and
+        if (f["departure_city"].lower() == dep_city.lower() and 
             f["arrival_city"].lower() == arr_city.lower() and
             f["departure_date"] == flight_date):
             matched.append(f)
@@ -44,14 +45,14 @@ search_flights_tool = Tool(
 def _policy_check_wrapper(flight_data_str: str):
     
     try:
-        # Safely parse string to Python object (list or single dict)
+        # Safely parse string to Python object 
         flight_data = ast.literal_eval(flight_data_str)
     except Exception:
         return "Invalid flight data format. Please provide valid flight info."
 
     # If it's a list, check each flight; otherwise, it's a single flight dict
     if isinstance(flight_data, dict):
-        flight_data = [flight_data]  # convert to list for uniform handling
+        flight_data = [flight_data]  
 
     results = []
     for flight in flight_data:
@@ -113,5 +114,63 @@ retrieve_past_purchases_tool = Tool(
     description=(
         "Use this to get the user's past purchased flights. "
         "It returns a JSON list of purchases or a message if none found."
+    )
+)
+
+#####
+
+def _recommend_destination_wrapper(preference: str):
+
+    pref = preference.lower()
+    
+    threshold_hot = 30    # For "hot" recommendations
+    threshold_cold = 20   # For "cold" recommendations
+
+    # Gather degrees by destination 
+    city_degrees = defaultdict(list)
+    for flight in MOCK_FLIGHTS:
+        city = flight.get("arrival_city", "") # Get the destination city from the flight data
+        degree = flight.get("degree")         # Get the temperature degree from the flight data
+
+        if degree is not None and city:
+            city_degrees[city].append(degree) # Add the degree to the list for the city
+    
+    # Compute the average degree for each city
+    city_avg = {}
+    for city, degrees in city_degrees.items():
+        city_avg[city] = sum(degrees) / len(degrees)
+    
+    if "hot" in pref:
+        # recommended = [city for city, avg in city_avg.items() if avg >= threshold_hot]
+        recommended = []
+        for city, avg in city_avg.items():
+            if avg >= threshold_hot:
+                recommended.append(city)
+
+        if recommended:
+            return f"For hot destinations, I recommend: {', '.join(recommended)}."
+        else:
+            return "I couldn't find any destinations that meet a hot weather criterion."
+    elif "cold" in pref:
+        # recommended = [city for city, avg in city_avg.items() if avg <= threshold_cold]
+        recommended = []
+        for city, avg in city_avg.items():
+            if avg <= threshold_cold:
+                recommended.append(city)
+
+        if recommended:
+            return f"For cold destinations, I recommend: {', '.join(recommended)}."
+        else:
+            return "I couldn't find any destinations that meet a cold weather criterion."
+    else:
+        return "Please specify whether you prefer a hot or cold destination."
+
+# Wrap the function as a LangChain Tool.
+recommend_destination_tool = Tool(
+    name="recommend_destination_tool",
+    func=_recommend_destination_wrapper,
+    description=(
+        "Recommends destination cities based on weather preferences by analyzing flight data. "
+        "Input should be a string indicating 'hot' or 'cold'."
     )
 )
